@@ -1,9 +1,12 @@
 package ua.pro.barynova.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
+/**
+ * Like -> сущность для представления лайка поста
+ * Связывает пользователя и пост
+ */
 @Entity
 @Table(name = "Likes")
 public class Like {
@@ -15,59 +18,108 @@ public class Like {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "post_id")
-    private int postId;
+    /**
+     * Пост который был лайкнут
+     */
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
-    @Column(name = "user_id")
-    private int userId;
+    /**
+     * Пользователь который лайкнул пост
+     */
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     public Like() {}
 
-    public Like(int postId, int userId) {
-        this.postId = postId;
-        this.userId = userId;
+    /**
+     * Конструктор с параметрами
+     * @param post - пост который лайкнули
+     * @param user - пользователь который лайкнул
+     */
+    public Like(Post post, User user) {
+        this.post = post;
+        this.user = user;
         this.createdAt = LocalDateTime.now();
     }
 
+    /**
+     * Получить ID лайка
+     * @return ID
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Установить ID лайка
+     * @param id - новый ID
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    /**
+     * Получить время создания лайка
+     * @return дата и время
+     */
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    /**
+     * Установить время создания
+     * @param createdAt - новое время
+     */
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public int getPostId() {
-        return postId;
+    /**
+     * Получить пост который был лайкнут
+     * @return объект Post
+     */
+    public Post getPost() {
+        return post;
     }
 
-    public void setPostId(int postId) {
-        this.postId = postId;
+    /**
+     * Установить пост
+     * @param post - объект Post
+     */
+    public void setPostId(Post post) {
+        this.post = post;
     }
 
-    public int getUserId() {
-        return userId;
+    /**
+     * Получить пользователя который лайкнул
+     * @return объект User
+     */
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    /**
+     * Установить пользователя
+     * @param user - объект User
+     */
+    public void setUser(User user) {
+        this.user = user;
     }
 
+    /**
+     * Строковое представление лайка
+     * @return строка с информацией о лайке
+     */
     @Override
     public String toString() {
         return "Like{" +
                 "id=" + id +
                 ", createdAt=" + createdAt +
-                ", postId=" + postId +
-                ", userId=" + userId +
+                ", post=" + post.getTitle() +
+                ", user=" + user.getUsername() +
                 '}';
     }
 }

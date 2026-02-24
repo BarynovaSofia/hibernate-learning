@@ -29,6 +29,12 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Comment> comments = new ArrayList<>();
 
+    /**
+     * Список лайков пользователя (посты которые он лайкнул)
+     */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Like> likes = new ArrayList<>();
+
     public User() {
     }
 
@@ -84,6 +90,22 @@ public class User {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    /**
+     * Получить все лайки пользователя
+     * @return список лайков
+     */
+    public List<Like> getLikes() {
+        return likes;
+    }
+
+    /**
+     * Установить список лайков
+     * @param likes - новый список лайков
+     */
+    public void setLikes(List<Like> likes) {
+        this.likes = likes;
     }
 
     @Override
