@@ -18,18 +18,20 @@ public class Comment {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "post_id")
-    private int postId;
+    @ManyToOne
+    @JoinColumn (name = "post_id")
+    private Post post;
 
-    @Column(name = "user_id")
-    private int userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Comment() {}
 
-    public Comment(String content, int postId, int userId) {
+    public Comment(String content, Post post, User user) {
         this.content = content;
-        this.postId = postId;
-        this.userId = userId;
+        this.post = post;
+        this.user = user;
         this.createdAt = LocalDateTime.now();
     }
 
@@ -57,20 +59,20 @@ public class Comment {
         this.createdAt = createdAt;
     }
 
-    public int getPostId() {
-        return postId;
+    public Post getPost() {
+        return post;
     }
 
-    public void setPostId(int postId) {
-        this.postId = postId;
+    public void setPost(Post post) {
+        this.post = post;
     }
 
-    public int getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -79,8 +81,8 @@ public class Comment {
                 "id=" + id +
                 ", content='" + content + '\'' +
                 ", createdAt=" + createdAt +
-                ", postId=" + postId +
-                ", userId=" + userId +
+                ", post=" + post.getTitle() +
+                ", user=" + user.getUsername() +
                 '}';
     }
 }

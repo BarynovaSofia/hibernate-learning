@@ -9,19 +9,25 @@ import ua.pro.barynova.util.HibernateUtil;
 public class PostRepository {
     private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
-    //CREATE
-    public void save(Post post) {
+    /**
+     * Сохранить новый пост в БД
+     * @param post -> объект поста
+     * @return сохранённый пост с ID
+     */
+    public Post save(Post post) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
             session.persist(post);
             transaction.commit();
             System.out.println("-> Post saved: " + post.getTitle());
+            return post;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
             System.out.println("xx Error saving post: " + e.getMessage());
+            return null;
         }
     }
 
