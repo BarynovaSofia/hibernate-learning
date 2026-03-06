@@ -7,12 +7,13 @@ import ua.pro.barynova.entity.User;
 import ua.pro.barynova.repository.CommentRepository;
 import ua.pro.barynova.repository.LikeRepository;
 import ua.pro.barynova.repository.PostRepository;
+import ua.pro.barynova.repository.QueryService;
 import ua.pro.barynova.repository.UserRepository;
 import ua.pro.barynova.util.HibernateUtil;
+import java.util.List;
 
 /**
- * Демонстрирует CRUD операции и отношения между Entity
- * (User, Post, Comment, Like)
+ * Демонстрирует CRUD операции, отношения между Entity и HQL запросы
  */
 public class Main {
     public static void main(String[] args) {
@@ -20,14 +21,12 @@ public class Main {
         PostRepository postRepository = new PostRepository();
         CommentRepository commentRepository = new CommentRepository();
         LikeRepository likeRepository = new LikeRepository();
+        QueryService queryService = new QueryService();
 
-        //CREATE USER
-        System.out.println("==== CREATE USER ====");
+        System.out.println("=== CREATE DATA ===");
         User user1 = new User("alice", "alice@mail.com");
         User savedUser = userRepository.save(user1);
 
-        //CREATE POSTS
-        System.out.println("\n==== CREATE POSTS ====");
         if (savedUser != null) {
             Post post1 = new Post("My First Post", "Hello World!", savedUser);
             Post savedPost1 = postRepository.save(post1);
@@ -35,8 +34,6 @@ public class Main {
             Post post2 = new Post("Java and Hibernate", "Learning Hibernate is fun!", savedUser);
             Post savedPost2 = postRepository.save(post2);
 
-            //CREATE COMMENTS
-            System.out.println("\n==== CREATE COMMENTS ====");
             if (savedPost1 != null && savedPost2 != null) {
                 Comment comment1 = new Comment("Great post!", savedPost1, savedUser);
                 commentRepository.save(comment1);
@@ -47,8 +44,6 @@ public class Main {
                 Comment comment3 = new Comment("Thanks for sharing!", savedPost1, savedUser);
                 commentRepository.save(comment3);
 
-                //CREATE LIKES
-                System.out.println("\n==== CREATE LIKES ====");
                 Like like1 = new Like(savedPost1, savedUser);
                 likeRepository.save(like1);
 
@@ -57,40 +52,32 @@ public class Main {
             }
         }
 
-        //READ POST WITH USER, COMMENTS AND LIKES
-        System.out.println("\n==== READ POST WITH USER, COMMENTS AND LIKES ====");
-        Post foundPost = postRepository.findById(1);
-        if (foundPost != null) {
-            System.out.println("Post: " + foundPost);
-            System.out.println("Author: " + foundPost.getUser().getUsername());
-            System.out.println("Likes count: " + foundPost.getLikes().size());
-            System.out.println("Comments count: " + foundPost.getComments().size());
+        System.out.println("\n=== HQL QUERIES ===");
 
-            System.out.println("Comments:");
-            for (Comment comment : foundPost.getComments()) {
-                System.out.println("  - " + comment.getUser().getUsername() + ": " + comment.getContent());
-            }
-
-            System.out.println("Likes by:");
-            for (Like like : foundPost.getLikes()) {
-                System.out.println("  - " + like.getUser().getUsername());
-            }
+        System.out.println("\n1) Get all users:");
+        List<User> allUsers = queryService.getAllUsers();
+        System.out.println("Total users: " + allUsers.size());
+        for (User u : allUsers) {
+            System.out.println("  - " + u.getUsername() + " (" + u.getEmail() + ")");
         }
 
-        //READ USER WITH POSTS, COMMENTS AND LIKES
-        System.out.println("\n==== READ USER WITH POSTS, COMMENTS AND LIKES ====");
-        User userWithData = userRepository.findById(savedUser.getId());
-        if (userWithData != null) {
-            System.out.println("User: " + userWithData.getUsername());
-            System.out.println("Posts count: " + userWithData.getPosts().size());
-            System.out.println("Comments count: " + userWithData.getComments().size());
-            System.out.println("Likes count: " + userWithData.getLikes().size());
-
-            System.out.println("\nPosts created:");
-            for (Post post : userWithData.getPosts()) {
-                System.out.println("  - " + post.getTitle() + " (" + post.getComments().size() + " comments, " + post.getLikes().size() + " likes)");
-            }
+        System.out.println("\n2) Get user by email:");
+        User foundByEmail = queryService.getUserByEmail("alice@mail.com");
+        if (foundByEmail != null) {
+            System.out.println("Found: " + foundByEmail.getUsername());
         }
+
+        System.out.println("\n3) Count all users:");
+        Long userCount = queryService.countAllUsers();
+        System.out.println("Total users in DB: " + userCount);
+
+        System.out.println("\n4) Get all users ordered by name:");
+        List<User> usersByName = queryService.getAllUsersOrderedByName();
+        System.out.println("Users (ordered by name): " + usersByName.size());
+        for (User u : usersByName) {
+            System.out.println("  - " + u.getUsername());
+        }
+
         HibernateUtil.shutdown();
     }
 }
